@@ -2,15 +2,17 @@
 
 import { useSession, signIn, signOut } from "next-auth/react";
 import { LogOut, LogIn } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
 export default function AuthButton() {
   const { data: session, status } = useSession();
+  const { t } = useLanguage();
 
   if (status === "loading") {
     return (
       <button disabled style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 12px', borderRadius: '8px', color: 'var(--color-text-secondary)', width: '100%' }}>
         <div style={{ width: '18px', height: '18px', animation: 'spin 1s linear infinite', border: '2px solid rgba(255,255,255,0.1)', borderTopColor: '#fff', borderRadius: '50%' }}></div>
-        <span style={{ fontSize: '14px', fontWeight: 500 }}>Loading...</span>
+        <span style={{ fontSize: '14px', fontWeight: 500 }}>{t("authLoading")}</span>
       </button>
     );
   }
@@ -29,7 +31,7 @@ export default function AuthButton() {
           <LogOut size={18} />
         )}
         <span style={{ fontSize: '14px', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-          {session.user?.name || 'Sign Out'}
+          {session.user?.name || t("authSignOut")}
         </span>
       </button>
     );
@@ -41,7 +43,7 @@ export default function AuthButton() {
       style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 12px', borderRadius: '8px', background: 'var(--color-accent-purple)', color: '#fff', width: '100%' }}
     >
       <LogIn size={18} />
-      <span style={{ fontSize: '14px', fontWeight: 500 }}>Sign In with Google</span>
+      <span style={{ fontSize: '14px', fontWeight: 500 }}>{t("authSignInGoogle")}</span>
     </button>
   );
 }

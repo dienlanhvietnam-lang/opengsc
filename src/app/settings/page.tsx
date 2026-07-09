@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
+import { UI_LANGUAGES } from "@/lib/i18n/languages";
 import SeoToolsSettings, { SeoProviderKeysSection, AeoProviderKeysSection } from "@/components/SeoToolsSettings";
 
 type NavItem = "accounts" | "teams" | "api" | "api-keys" | "indexing-api" | "seo-tools" | "members" | "preferences" | "supersites";
@@ -486,12 +487,12 @@ function PreferencesSection({ user }: { user: any }) {
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px", background: "rgba(255,255,255,0.03)", borderRadius: "8px", border: "1px solid var(--color-border)" }}>
           <div>
             <div style={{ fontSize: "13px", fontWeight: 600, color: "var(--color-text-primary)" }}>{t("language")}</div>
-            <div style={{ fontSize: "12px", color: "var(--color-text-secondary)", marginTop: "2px" }}>English / Русский / Українська</div>
+            <div style={{ fontSize: "12px", color: "var(--color-text-secondary)", marginTop: "2px" }}>English / Tiếng Việt / Русский / Українська</div>
           </div>
           <div style={{ display: "flex", gap: "6px" }}>
-            {(["en", "ru", "uk"] as const).map(lang => (
-              <button key={lang} onClick={() => setLanguage(lang)} style={{ padding: "6px 16px", borderRadius: "8px", fontSize: "13px", fontWeight: 600, cursor: "pointer", background: language === lang ? "rgba(139,92,246,0.15)" : "transparent", color: language === lang ? "#8B5CF6" : "var(--color-text-secondary)", border: `1px solid ${language === lang ? "rgba(139,92,246,0.3)" : "var(--color-border)"}`, transition: "all 0.15s" }}>
-                {lang === "en" ? "🇬🇧 EN" : lang === "ru" ? "🇷🇺 RU" : "🇺🇦 UK"}
+            {UI_LANGUAGES.map(({ code, label, flag }) => (
+              <button key={code} onClick={() => setLanguage(code)} style={{ padding: "6px 16px", borderRadius: "8px", fontSize: "13px", fontWeight: 600, cursor: "pointer", background: language === code ? "rgba(139,92,246,0.15)" : "transparent", color: language === code ? "#8B5CF6" : "var(--color-text-secondary)", border: `1px solid ${language === code ? "rgba(139,92,246,0.3)" : "var(--color-border)"}`, transition: "all 0.15s" }}>
+                {flag} {label}
               </button>
             ))}
           </div>

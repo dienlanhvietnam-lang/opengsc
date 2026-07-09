@@ -12,6 +12,7 @@ import {
   Sparkles, Check, Minus,
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
+import { formatDate } from "@/lib/i18n/format";
 import { usePrivacy } from "@/lib/PrivacyContext";
 
 const ENGINES = ["chatgpt", "perplexity", "claude", "grok"] as const;
@@ -63,7 +64,7 @@ function EngineCell({ engine, result, configured, blurStyle }: {
 function EngineHistoryRow({ engine, checks }: {
   engine: Engine; checks: { checkedAt: string; cited: boolean; url: string | null; error: string | null }[];
 }) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   if (!checks.length) return null;
   const recent = checks.slice(-30);
   return (
@@ -72,7 +73,7 @@ function EngineHistoryRow({ engine, checks }: {
       <div style={{ display: "flex", gap: "2px", alignItems: "center" }}>
         {recent.map((c, i) => (
           <span key={i}
-            title={`${new Date(c.checkedAt).toLocaleDateString()} — ${c.error ? "error" : c.cited ? t("aeoCited") : t("aeoNotCited")}`}
+            title={`${formatDate(language, c.checkedAt)} — ${c.error ? "error" : c.cited ? t("aeoCited") : t("aeoNotCited")}`}
             style={{
               width: "8px", height: "8px", borderRadius: "2px", flexShrink: 0,
               background: c.error ? "#EF4444" : c.cited ? "#10B981" : "var(--color-border)",
@@ -127,7 +128,7 @@ function SortableTh({ label, active, dir, align = "center", onClick }: SortableT
 }
 
 export default function AeoTracker({ siteDbId }: { siteDbId: string; domain?: string }) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { blur } = usePrivacy();
   const blurStyle: React.CSSProperties = blur ? { filter: "blur(5px)", userSelect: "none" } : {};
 
@@ -402,7 +403,7 @@ export default function AeoTracker({ siteDbId }: { siteDbId: string; domain?: st
                       </td>
                     ))}
                     <td style={{ padding: "10px 12px", color: "var(--color-text-secondary)", fontSize: "11px", whiteSpace: "nowrap" }}>
-                      {r.lastCheckedAt ? new Date(r.lastCheckedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "—"}
+                      {r.lastCheckedAt ? formatDate(language, r.lastCheckedAt, { month: "short", day: "numeric" }) : "—"}
                     </td>
                     <td style={{ padding: "10px 12px", whiteSpace: "nowrap", textAlign: "right" }} onClick={e => e.stopPropagation()}>
                       <button onClick={() => checkOne(r.id)} disabled={!!busy} title={t("aeoCheckAll")}

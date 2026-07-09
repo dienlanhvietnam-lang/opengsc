@@ -12,6 +12,7 @@ import {
 } from "recharts";
 import { Plus, RefreshCw, Trash2, ChevronDown, ChevronUp, ChevronsUpDown, ExternalLink, Search, MapPin, Globe } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
+import { formatDate } from "@/lib/i18n/format";
 import { usePrivacy } from "@/lib/PrivacyContext";
 import { COUNTRIES, LANGUAGES } from "@/lib/seo/regions";
 
@@ -82,7 +83,7 @@ function SortableTh({ label, active, dir, align = "center", onClick }: {
 }
 
 function HistoryChart({ keywordId }: { keywordId: string }) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -97,8 +98,8 @@ function HistoryChart({ keywordId }: { keywordId: string }) {
 
   const series = useMemo(() => (data?.series ?? []).map((s: any) => ({
     ...s,
-    label: new Date(s.date).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
-  })), [data]);
+    label: formatDate(language, s.date, { month: "short", day: "numeric" }),
+  })), [data, language]);
 
   if (loading) return <div style={{ padding: "24px", fontSize: "13px", color: "var(--color-text-secondary)" }}>Loading…</div>;
   if (!series.length) return <div style={{ padding: "24px", fontSize: "13px", color: "var(--color-text-secondary)" }}>{t("wlNoData")}</div>;
@@ -124,7 +125,7 @@ function HistoryChart({ keywordId }: { keywordId: string }) {
 }
 
 export default function RankTracker({ siteDbId }: { siteDbId: string; domain?: string }) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { blur } = usePrivacy();
   const blurStyle: React.CSSProperties = blur ? { filter: "blur(5px)", userSelect: "none" } : {};
 
@@ -476,7 +477,7 @@ export default function RankTracker({ siteDbId }: { siteDbId: string; domain?: s
                     </td>
                     <td style={{ padding: "10px 12px" }}><PosSparkline history={r.history} /></td>
                     <td style={{ padding: "10px 12px", color: "var(--color-text-secondary)", fontSize: "11px", whiteSpace: "nowrap" }}>
-                      {r.lastCheckedAt ? new Date(r.lastCheckedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "—"}
+                      {r.lastCheckedAt ? formatDate(language, r.lastCheckedAt, { month: "short", day: "numeric" }) : "—"}
                     </td>
                     <td style={{ padding: "10px 12px", whiteSpace: "nowrap", textAlign: "right" }} onClick={e => e.stopPropagation()}>
                       <button onClick={() => checkOne(r.id)} disabled={!!busy} title={t("rankCheckAll")}

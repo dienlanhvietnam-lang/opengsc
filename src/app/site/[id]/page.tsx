@@ -14,6 +14,7 @@ import { ALGO_UPDATES, ALGO_UPDATE_COLORS, algoDateLabel } from "@/lib/algoUpdat
 import { useParams, useRouter } from "next/navigation";
 import { usePrivacy } from "@/lib/PrivacyContext";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
+import { formatDate, formatTime } from "@/lib/i18n/format";
 import {
   ArrowLeft, Sparkles, Eye, Percent, MoveUp,
   SlidersHorizontal, ChevronDown, Smartphone, Monitor, Tablet,
@@ -3079,8 +3080,9 @@ function AnnotationsFilterDd({ onSetupBranded }: { onSetupBranded?: () => void }
 
 // ─── Add Note Modal ───────────────────────────────────────────────────────────
 function AddNoteModal({ onClose, onSave }: { onClose: () => void; onSave: (note: { date: string; title: string; desc: string; scope: string }) => void }) {
+  const { language } = useLanguage();
   const today = new Date();
-  const todayStr = today.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  const todayStr = formatDate(language, today, { month: "short", day: "numeric", year: "numeric" });
   const [title, setTitle] = useState("");
   const [desc, setDesc]   = useState("");
   const [scope, setScope] = useState<"all" | "specific" | "group">("all");
@@ -3712,7 +3714,7 @@ function WinnersLosers({ data, blur, onTrack, tracked }: {
 
 // ─── Main page ────────────────────────────────────────────────────────────────
 export default function SitePage() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const params = useParams();
   const router = useRouter();
   const domain = decodeURIComponent(params.id as string);
@@ -3865,9 +3867,9 @@ export default function SitePage() {
     // Empty fallback (no fake numbers)
     return Array.from({ length: 7 }, (_, i) => {
       const d = new Date(); d.setDate(d.getDate() - 7 + i);
-      return { date: d.toLocaleDateString("en-US", { month: "short", day: "numeric" }), clicks: 0, impressions: 0, ctr: 0, position: 0, clicksC: 0, impressionsC: 0, ctrC: 0, positionC: 0 };
+      return { date: formatDate(language, d, { month: "short", day: "numeric" }), clicks: 0, impressions: 0, ctr: 0, position: 0, clicksC: 0, impressionsC: 0, ctrC: 0, positionC: 0 };
     });
-  }, [siteData]);
+  }, [siteData, language]);
 
   // Google updates that fall inside the visible chart window
   const visibleAlgoUpdates = useMemo(() => {
@@ -4116,13 +4118,13 @@ export default function SitePage() {
             <button
               onClick={handleSync}
               disabled={syncing}
-              title={syncedAt ? `Last synced: ${syncedAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} ${syncedAt.toLocaleDateString([], { month: 'short', day: 'numeric' })}` : 'Sync GSC data'}
+              title={syncedAt ? `${t("siteLastSynced")} ${formatTime(language, syncedAt, { hour: "2-digit", minute: "2-digit" })} ${formatDate(language, syncedAt, { month: "short", day: "numeric" })}` : t("dashSyncGscTitle")}
               style={{ display: "flex", alignItems: "center", gap: "5px", padding: "6px 11px", borderRadius: "8px", border: "1px solid var(--color-border)", background: syncing ? "rgba(59,130,246,0.08)" : "var(--color-card)", color: syncing ? "#3B82F6" : "var(--color-text-secondary)", fontSize: "12px", fontWeight: 500, cursor: syncing ? "not-allowed" : "pointer", whiteSpace: "nowrap" }}
             >
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, animation: syncing ? "spin 1.2s linear infinite" : "none" }}>
                 <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
               </svg>
-              {syncing ? "Syncing…" : syncedAt ? syncedAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "Sync"}
+              {syncing ? t("siteSyncing") : syncedAt ? formatTime(language, syncedAt, { hour: "2-digit", minute: "2-digit" }) : t("siteSync")}
             </button>
           </div>
         </div>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { LanguageProvider } from "@/lib/i18n/LanguageProvider";
+import LocaleHtmlSync from "@/lib/i18n/LocaleHtmlSync";
 import ClientSessionProvider from "@/components/ClientSessionProvider";
 import DashboardShell from "@/components/DashboardShell";
 import SeoKeysSync from "@/components/SeoKeysSync";
@@ -29,6 +30,7 @@ export default function RootLayout({
             <LayoutProvider>
               <PrivacyProvider>
                 <LanguageProvider>
+                  <LocaleHtmlSync />
                   <SeoKeysSync />
                   <DashboardShell>
                     {children}

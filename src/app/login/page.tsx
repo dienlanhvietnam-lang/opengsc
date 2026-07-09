@@ -1,9 +1,11 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { signIn } from "next-auth/react";
 import { TrendingUp, Globe, Shield, Moon, Sun } from "lucide-react";
 import { useTheme } from "@/lib/ThemeContext";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
+import { UI_LANGUAGES } from "@/lib/i18n/languages";
 
 function GoogleIcon() {
   return (
@@ -62,6 +64,21 @@ const content = {
     signIn: "Увійти через Google",
     bullets: ["Лише Google OAuth — без паролів", "Можна підключити кілька акаунтів", "Self-hosted на вашому VPS"],
   },
+  vi: {
+    tagline: "Trung tâm điều khiển",
+    highlight: "Search Console",
+    tagline2: "cá nhân của bạn",
+    sub: "Mọi tài khoản Google, mọi website — một bảng điều khiển gọn gàng. Không giới hạn, không rối, không thuê bao.",
+    features: [
+      { title: "Mọi tài khoản ở một nơi", desc: "Kết nối nhiều tài khoản Google và xem tất cả property GSC trên một dashboard." },
+      { title: "Lưu lượng truy cập trong nháy mắt", desc: "Biểu đồ mini cho từng site. Phát hiện ngay site tăng trưởng, giảm và xu hướng." },
+      { title: "Dữ liệu của bạn, server của bạn", desc: "Self-hosted. Dữ liệu Search Console không rời khỏi VPS của bạn." },
+    ],
+    getStarted: "Bắt đầu",
+    signInSub: "Đăng nhập bằng tài khoản Google. Tài khoản đầu tiên trở thành chủ sở hữu dashboard này.",
+    signIn: "Đăng nhập bằng Google",
+    bullets: ["Chỉ Google OAuth — không mật khẩu", "Kết nối nhiều tài khoản Google", "Self-hosted trên VPS của bạn"],
+  },
 };
 
 const featureIcons = [
@@ -73,7 +90,9 @@ const featureIcons = [
 export default function LoginPage() {
   const { dark, setDark } = useTheme();
   const { language, setLanguage } = useLanguage();
-  const c = content[language];
+  const [hydrated, setHydrated] = useState(false);
+  useEffect(() => setHydrated(true), []);
+  const c = content[hydrated ? language : "en"] ?? content.en;
 
   return (
     <div style={{
@@ -96,22 +115,22 @@ export default function LoginPage() {
           border: "1px solid var(--color-border)",
           borderRadius: "8px", overflow: "hidden",
         }}>
-          {(["en", "ru", "uk"] as const).map(lang => (
+          {UI_LANGUAGES.map(({ code, label }) => (
             <button
-              key={lang}
-              onClick={() => setLanguage(lang)}
+              key={code}
+              onClick={() => setLanguage(code)}
               style={{
                 padding: "6px 12px",
                 fontSize: "12px", fontWeight: 600,
                 border: "none", cursor: "pointer",
-                background: language === lang ? "var(--color-accent-purple)" : "transparent",
-                color: language === lang ? "#fff" : "var(--color-text-secondary)",
+                background: language === code ? "var(--color-accent-purple)" : "transparent",
+                color: language === code ? "#fff" : "var(--color-text-secondary)",
                 transition: "all 0.15s",
                 textTransform: "uppercase",
                 letterSpacing: "0.04em",
               }}
             >
-              {lang}
+              {label}
             </button>
           ))}
         </div>

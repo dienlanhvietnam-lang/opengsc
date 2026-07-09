@@ -13,6 +13,7 @@ import {
 import { AreaChart, Area, ResponsiveContainer, Tooltip } from "recharts";
 import { usePrivacy } from "@/lib/PrivacyContext";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
+import { formatDate, formatTime } from "@/lib/i18n/format";
 import { useHealthStatus } from "@/components/SiteHealthPanel";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -505,7 +506,7 @@ const tbBtn = (active = false): React.CSSProperties => ({
 
 // ─── Main page ────────────────────────────────────────────────────────────────
 export default function PortfolioPage() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const router = useRouter();
   const [sites, setSites]       = useState<any[]>([]);
   const [loading, setLoading]   = useState(true);
@@ -685,7 +686,7 @@ export default function PortfolioPage() {
       const emptyData = Array.from({ length: n }, (_, i) => {
         const d = new Date(startDate); d.setDate(startDate.getDate() + i);
         return {
-          date: d.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+          date: formatDate(language, d, { month: "short", day: "numeric" }),
           clicks: 0, impressions: 0, ctr: 0, position: 0,
           clicksC: 0, impressionsC: 0, ctrC: 0, positionC: 0,
           cN: 50, iN: 50, tN: 50, pN: 50,
@@ -703,7 +704,7 @@ export default function PortfolioPage() {
         },
       };
     });
-  }, [sites, period]);
+  }, [sites, period, language]);
   const activeFilterCount = [
     branded !== "all",
     filterDimension !== null && filterText.trim() !== "",
@@ -820,8 +821,8 @@ export default function PortfolioPage() {
   const toggleHide   = (id: string) => setHidden(p => { const n = new Set(p); n.has(id) ? n.delete(id) : n.add(id); return n; });
 
   // ─── Period groups (uses t() for labels) ──────────────────────────────────
-  const fmt    = (d: Date) => d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-  const fmtDay = (d: Date) => d.toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" });
+  const fmt    = (d: Date) => formatDate(language, d, { month: "short", day: "numeric", year: "numeric" });
+  const fmtDay = (d: Date) => formatDate(language, d, { weekday: "long", month: "short", day: "numeric" });
   const today     = new Date();
   const yesterday = new Date(today); yesterday.setDate(today.getDate() - 1);
   const ago   = (n: number) => { const d = new Date(yesterday); d.setDate(yesterday.getDate() - n + 1); return d; };
@@ -1358,7 +1359,7 @@ export default function PortfolioPage() {
         <button
           onClick={handleSync}
           disabled={syncStatus === "syncing"}
-          title={syncedAt ? `${t("dashLastSync")} ${syncedAt.toLocaleTimeString("ru", { hour: "2-digit", minute: "2-digit" })} ${syncedAt.toLocaleDateString("ru", { day: "numeric", month: "short" })}` : t("dashSyncGscTitle")}
+          title={syncedAt ? `${t("dashLastSync")} ${formatTime(language, syncedAt, { hour: "2-digit", minute: "2-digit" })} ${formatDate(language, syncedAt, { day: "numeric", month: "short" })}` : t("dashSyncGscTitle")}
           style={{
             display: "flex", alignItems: "center", gap: "6px",
             padding: "6px 12px", borderRadius: "8px", fontSize: "12px", fontWeight: 500,
@@ -1384,10 +1385,10 @@ export default function PortfolioPage() {
             </svg>
           )}
           {syncStatus === "syncing" ? t("idxSyncing")
-            : syncStatus === "done" ? `${t("dashDone")} · ${syncedAt?.toLocaleTimeString("ru", { hour: "2-digit", minute: "2-digit" })}`
+            : syncStatus === "done" ? `${t("dashDone")} · ${syncedAt ? formatTime(language, syncedAt, { hour: "2-digit", minute: "2-digit" }) : ""}`
             : syncStatus === "reauth" ? t("dashReauthNeeded")
             : syncStatus === "error" ? t("dashSyncErrorShort")
-            : syncedAt ? syncedAt.toLocaleTimeString("ru", { hour: "2-digit", minute: "2-digit" })
+            : syncedAt ? formatTime(language, syncedAt, { hour: "2-digit", minute: "2-digit" })
             : t("dashSyncGsc")}
         </button>
       </div>

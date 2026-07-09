@@ -330,9 +330,20 @@ export function ClarityPanel({ siteDbId, domain }: { siteDbId: string; domain?: 
           lowSample: (n: number) =>
             `Примітка: вибірка мала (${n} ${plural(n, ["сесія", "сесії", "сесій"])}) — усі висновки попередні, статистично недостовірні.`,
         },
+        vi: {
+          langName: "Vietnamese",
+          auditTitle: "Kiểm toán UX",
+          periodLine: (d: number) => `Kỳ: ${d} ngày dữ liệu thu thập`,
+          sSummary: "🎯 Tóm tắt",
+          sCritical: "🔴 Phát hiện quan trọng (nơi mất chuyển đổi)",
+          sCheck: "⚠️ Nên kiểm tra",
+          sRecs: "✅ Khuyến nghị",
+          lowSample: (n: number) =>
+            `Lưu ý: mẫu nhỏ (${n} phiên) — mọi kết luận chỉ mang tính sơ bộ, chưa đủ tin cậy thống kê.`,
+        },
       } as const;
 
-      const L = PROMPT_I18N[language as "en" | "ru" | "uk"] ?? PROMPT_I18N.en;
+      const L = PROMPT_I18N[language as "en" | "ru" | "uk" | "vi"] ?? PROMPT_I18N.en;
 
       const sessionsVal = Number(view.metrics.find(m => m.name === "sessions")?.value ?? 0);
       const lowSample = sessionsVal > 0 && sessionsVal < 100;

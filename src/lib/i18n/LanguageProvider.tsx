@@ -4,8 +4,9 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import en from "@/locales/en.json";
 import ru from "@/locales/ru.json";
 import uk from "@/locales/uk.json";
+import vi from "@/locales/vi.json";
+import { detectBrowserLanguage, isLanguage, type Language } from "./languages";
 
-type Language = "en" | "ru" | "uk";
 type Dictionary = typeof en;
 
 interface LanguageContextType {
@@ -16,20 +17,20 @@ interface LanguageContextType {
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
-const dictionaries: Record<Language, Dictionary> = { en, ru, uk };
+const dictionaries: Record<Language, Dictionary> = { en, ru, uk, vi };
+
+function readStoredLanguage(): Language {
+  if (typeof window === "undefined") return "en";
+  const saved = localStorage.getItem("language");
+  if (saved && isLanguage(saved)) return saved;
+  return detectBrowserLanguage();
+}
 
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   const [language, setLanguageState] = useState<Language>("en");
 
   useEffect(() => {
-    const saved = localStorage.getItem("language") as Language;
-    if (saved === "en" || saved === "ru" || saved === "uk") {
-      setLanguageState(saved);
-    } else {
-      const nav = navigator.language;
-      const browserLang: Language = nav.startsWith("uk") ? "uk" : nav.startsWith("ru") ? "ru" : "en";
-      setLanguageState(browserLang);
-    }
+    setLanguageState(readStoredLanguage());
   }, []);
 
   const setLanguage = (lang: Language) => {
@@ -38,7 +39,7 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const t = (key: keyof Dictionary) => {
-    return dictionaries[language][key] || key;
+    return dictionaries[language][key] || dictionaries.en[key] || String(key);
   };
 
   return (
